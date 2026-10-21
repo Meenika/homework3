@@ -34,7 +34,7 @@ func (e *FieldError) Error() string {
 // TODO: сохраните порядок пользователей. Формат результата:
 // "active=<количество> names=<имя1>,<имя2>".
 // Если активных пользователей нет, верните "" и ErrNoActiveUsers.
-func ActiveUserReport(users []User) (string, error) { 
+func ActiveUserReport(users []User) (string, error) {
 	countActive := 0
 	names := make([]string, 0, len(users))
 	for user := range users {
@@ -46,7 +46,7 @@ func ActiveUserReport(users []User) (string, error) {
 	if countActive > 0 {
 		return fmt.Sprintf("active=%d names=%s", countActive, strings.Join(names, ",")), nil
 	}
-	return "", ErrNoActiveUsers 
+	return "", ErrNoActiveUsers
 }
 
 // 02. DiscountOrder возвращает копию заказа со скидкой.
@@ -54,22 +54,22 @@ func ActiveUserReport(users []User) (string, error) {
 // TODO: Amount не может быть отрицательным, percent должен быть от 0 до 100.
 // Для некорректного поля верните *FieldError с Field "amount" или "percent".
 // Исходный order не изменяйте. Вычисления выполняются целыми числами.
-func DiscountOrder(order Order, percent int) (Order, error) { 
+func DiscountOrder(order Order, percent int) (Order, error) {
 	if order.Amount < 0 {
-		return order, &FieldError{
-			Field: "amount",
+		return Order{}, &FieldError{
+			Field:  "amount",
 			Reason: "cannot be less than 0",
 		}
 	}
 	if percent < 0 || percent > 100 {
-		return order, &FieldError{
-			Field: "percent",
+		return Order{}, &FieldError{
+			Field:  "percent",
 			Reason: "The percentage can be greater than 0 or less than 100",
 		}
 	}
 	copyOrder := order
 	copyOrder.Amount = copyOrder.Amount * (100 - percent) / 100
-	return copyOrder, nil 
+	return copyOrder, nil
 }
 
 // 03. AppendToIsolatedWindow создаёт окно items[low:high] с ограниченной
@@ -86,7 +86,7 @@ func AppendToIsolatedWindow(items []int, low, high int, values ...int) (source, 
 		return source, window, nil
 	}
 	return nil, nil, &FieldError{
-		Field: "Boundaries",
+		Field:  "Boundaries",
 		Reason: "The boundaries are filled incorrectly",
 	}
 }

@@ -34,7 +34,7 @@ func IsNil(err error) bool {
 func RequireText(field, value string) error {
 	if value == "" {
 		return &FieldError{
-			Field: field,
+			Field:  field,
 			Reason: "is required",
 		}
 	}
@@ -48,10 +48,10 @@ func RequireText(field, value string) error {
 func ValidatePositive(field string, value int) error {
 	if value <= 0 {
 		return &FieldError{
-			Field: field,
+			Field:  field,
 			Reason: "must be positive",
 		}
-	} 
+	}
 	return nil
 }
 
@@ -63,8 +63,8 @@ func ParseAge(raw string) (int, error) {
 	number, err := strconv.Atoi(raw)
 	if err != nil {
 		return 0, fmt.Errorf("parse age %w", err)
-		}
-	
+	}
+
 	return number, nil
 }
 
@@ -112,29 +112,28 @@ func FieldFrom(err error) (*FieldError, bool) {
 	if err == nil {
 		return nil, false
 	}
-    var fieldErr *FieldError
-    if errors.As(err, &fieldErr) {
-        return fieldErr, true
-    }
-    return nil, false
+	var fieldErr *FieldError
+	if errors.As(err, &fieldErr) {
+		return fieldErr, true
+	}
+	return nil, false
 }
-
 
 // 10. FieldName возвращает имя поля из *FieldError.
 //
 // TODO: ошибка может быть обёрнута несколько раз. Для другой ошибки
 // или nil верните пустую строку.
 func FieldName(err error) string {
-    if err == nil {
-        return ""
-    }
+	if err == nil {
+		return ""
+	}
 
-    var fieldErr *FieldError
+	var fieldErr *FieldError
 
-    if errors.As(err, &fieldErr) {
-        return fieldErr.Field
-    }
-    return ""
+	if errors.As(err, &fieldErr) {
+		return fieldErr.Field
+	}
+	return ""
 }
 
 // 11. FirstError возвращает первую ненулевую ошибку из списка.
@@ -180,23 +179,17 @@ func ErrorText(err error) string {
 // TODO: пустые name и email считаются ошибкой обязательного поля,
 // age должен быть положительным. Верните только первую найденную ошибку.
 func ValidateUser(name, email string, age int) error {
-	if name == "" {
-		return &FieldError{
-			Field: "name",
-			Reason: "empty name",
-		}
+	err := RequireText("name", name)
+	if err != nil {
+		return err
 	}
-	if email == "" {
-		return &FieldError{
-			Field: "email",
-			Reason: "empty email",
-		}
+	err = RequireText("email", email)
+	if err != nil {
+		return err
 	}
-	if age <= 0 {
-		return &FieldError{
-			Field: "age",
-			Reason: "negative age",
-		}
+	err = ValidatePositive("age", age)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -214,8 +207,8 @@ func Classify(err error) string {
 	if errors.Is(err, ErrNotFound) {
 		return "not_found"
 	}
-    if errors.As(err, &fieldErr) {
-        return "field:" + fieldErr.Field
-    }
-    return "other"
+	if errors.As(err, &fieldErr) {
+		return "field:" + fieldErr.Field
+	}
+	return "other"
 }
